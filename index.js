@@ -63,6 +63,15 @@ async function run() {
       const result = await propertyCollection.insertOne(propertyData);
     })
 
+    app.patch('/properties/:propertyId', async (req, res) => {
+      const { propertyId } = req.params;
+      const updatedData = req.body;
+      const result = await propertyCollection.updateOne(
+        { _id: new ObjectId(propertyId) },
+        { $set: { status: updatedData.status } });
+      res.json(result);
+    })
+
     app.patch('/properties/:id', async (req, res) => {
       const { id } = req.params;
       const updatedData = req.body;
