@@ -7,7 +7,7 @@ const port = 5000
 app.use(cors());
 app.use(express.json());
 
-const { MongoClient, ServerApiVersion } = require('mongodb');
+const { MongoClient, ServerApiVersion, ObjectId } = require('mongodb');
 
 app.get('/', (req, res) => {
   res.send('Hello World!')
@@ -38,9 +38,44 @@ async function run() {
       res.json(result);
     })
 
+    app.get('/properties/:propertyId', async (req, res) => {
+      const { propertyId } = req.params;
+      const result = await propertyCollection.findOne({ _id: new ObjectId(propertyId) });
+      res.json(result);
+    })
+
+
+    // app.get('/properties', async (req, res) => {
+    //   const query = {};
+    //   if(req.query.ownerId){
+    //     query.ownerId=req.query.ownerId;
+    //   }
+    //   if(req.query.status){
+    //     query.status=req.query.status;
+    //   }
+    //   const cursor = propertyCollection.find(query);
+    //   const result = await cursor.toArray();
+    //   res.send(result);
+    // })
+
     app.post('/properties', async (req, res) => {
       const propertyData = req.body;
       const result = await propertyCollection.insertOne(propertyData);
+    })
+
+    app.patch('/properties/:id', async (req, res) => {
+      const { id } = req.params;
+      const updatedData = req.body;
+      const result = await propertyCollection.updateOne(
+        { _id: new ObjectId(id) },
+        { $set: updatedData });
+      res.json(result);
+    })
+
+    app.delete('/properties/:propertyId', async (req, res) => {
+      const { propertyId } = req.params;
+      const result = await propertyCollection.deleteOne({ _id: new ObjectId(propertyId) });
+      res.json(result);
     })
 
     // Send a ping to confirm a successful connection
